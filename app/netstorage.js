@@ -1,5 +1,5 @@
-const Netstorage = require('../lib/netstorage');
-require('dotenv').config();
+const Netstorage = require('../lib/netstorage')
+require('dotenv').config()
 
 const config = {
   hostname: process.env.NS_HOSTNAME,
@@ -10,4 +10,4 @@ const config = {
   // proxy: 'https://yourproxyurl.com:port' // Optional
 }
 
-module.exports = new Netstorage(config);
+module.exports = new Netstorage(config)
