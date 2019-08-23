@@ -24,5 +24,5 @@ AWS_SECRET_ACCESS_KEY=<value_here>  <br />
 * `node app.js`
 
 #### TOOLS USED
-* `aws-sdk` [AWS-SDK-NodeSampleKit](https://github.com/aws-samples/aws-nodejs-sample)
-* `netstorage` [Akamai-NetstorageKit-Node](https://github.com/akamai/NetStorageKit-Node)
+* [AWS-SDK-NodeSampleKit](https://github.com/aws-samples/aws-nodejs-sample)
+* [Akamai-NetstorageKit-Node](https://github.com/akamai/NetStorageKit-Node)
