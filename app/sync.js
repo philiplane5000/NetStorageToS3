@@ -14,15 +14,19 @@ let netStorageSync = () => {
   let remotelistJSON = utils.getCurrentNetStorageList(netstorage_root) /* used by both paths */
   let logData = {processed_date: Date.now()}
 
-  if (fileExists) { /* PATH ONE (IDENTIFY AND DOWNLOAD RECENT LOGS) */
+  
   // ************ //
-    console.log('(1) READ PREVIOUSLY DOWNLOADED LIST                //')
-    console.log('(2) SET MTIME FROM TOP (LAST ON RECORD)            //')
-    console.log('(3) READ LATEST LOG FILE AND FILTER DOWN TO RECENT //')
-    console.log('(4) SYNC FROM FILTERED LIST                        //')
-    console.log('(5) DOWNLOAD + REWRITE `netstorage_list.txt`       //')
-    console.log('(6) WRITE `logData`  TO `log.txt`                  //')
-    // ************ //
+  /*
+    (1) READ PREVIOUSLY DOWNLOADED LIST                
+    (2) SET MTIME FROM TOP (LAST ON RECORD)            
+    (3) READ LATEST LOG FILE AND FILTER DOWN TO RECENT 
+    (4) SYNC FROM FILTERED LIST                        
+    (5) DOWNLOAD + REWRITE `netstorage_list.txt`      
+    (6) WRITE `logData`  TO `log.txt`                  
+  */
+  // ************ //
+
+  if (fileExists) { 
     utils.readLocalNetStorageList(localLogFilePath) /* (1) */
       .then(data => data[0].mtime) 
       .then(mtime => { {logData.mtime = mtime} }) /* (2) */
