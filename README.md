@@ -16,7 +16,7 @@ AWS_SECRET_ACCESS_KEY=<value_here>  <br />
 ### RUNNING THE APP
 
 #### STEP ONE
-* `cd app`
+* `cd /app`
 * `node getCurrentList.js`
 
 #### STEP TWO
