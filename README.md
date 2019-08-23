@@ -1,6 +1,6 @@
 ## NETSTORAGE TO S3
 
-Summary: A tool used to automate the transfer Akamai NetStorage files or logs to S3.
+*A tool to automate the transfer Akamai NetStorage files or logs to S3.*
 
 * Save below values in `app/.env` <br />
 NS_HOSTNAME=<value_here>  <br />
