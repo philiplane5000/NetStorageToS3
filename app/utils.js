@@ -1,6 +1,7 @@
 const ns = require('./netstorage.js')
+const s3 = require('./s3')
 const fs = require('fs')
-/* https://www.npmjs.com/package/fs-extra /* <= consider using */
+const fsp = require('promise-fs')
 
 module.exports = {
 
@@ -135,12 +136,35 @@ module.exports = {
     })
   }),
 
+  uploadFileToS3: (pathToFile, bucketName) => {
+    let fileName = pathToFile.split('/')[2] /* (!) ONLY WORKS IF LOGS ARE IN `./ns_logs/gia...` (!) */
+    fsp.readFile(pathToFile).then(buffer => {
+      let params = {Bucket: bucketName, Key: fileName, Body: buffer};
+      s3.upload(params, function(err, data) {
+          console.log(`err: ${err}`)
+          console.log(`data: ${JSON.stringify(data)}`)
+      });
+    }).catch(err => {
+        console.log(err)
+    })
+  },
+
+  listBucketsS3: () => {
+    s3.listBuckets(function(err, data) {
+      if (err) {
+        console.log('Error', err)
+      } else {
+        console.log('Success', data.Buckets)
+      }
+    })
+  },
+
   processQueue: (queueObject) => {
     queueObject.run().then(res => {
       console.log(res)
     }).catch(errors => {
       console.log(errors)
     })
-  }
+  },
 
 }

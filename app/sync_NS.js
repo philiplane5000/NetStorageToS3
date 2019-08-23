@@ -13,7 +13,6 @@ let netStorageSync = () => {
   let fileExists = utils.fileExists(localLogFilePath) /* boolean */
   let remotelistJSON = utils.getCurrentNetStorageList(netstorage_root) /* used by both paths */
   let logData = {processed_date: Date.now()}
-
   
   // ************ //
   /*
@@ -21,7 +20,7 @@ let netStorageSync = () => {
     (2) SET MTIME FROM TOP (LAST ON RECORD)            
     (3) READ LATEST LOG FILE AND FILTER DOWN TO RECENT 
     (4) SYNC FROM FILTERED LIST                        
-    (5) DOWNLOAD + REWRITE `netstorage_list.txt`      
+    (5) DOWNLOAD + REWRITE `/tmp/list.txt`      
     (6) WRITE `logData`  TO `log.txt`                  
   */
   // ************ //
@@ -53,32 +52,35 @@ let netStorageSync = () => {
       }).catch(errors => {
         console.log(errors)
       })
-  } else { /* PATH TWO (DOWNLOAD ALL LOGS) */
-  // ************ //
-    console.log('(!) NO FILE TO REFERENCE (!)             //')
-    console.log('(1) SYNC/DOWNLOAD ALL REMOTE LOGS        //')
-    console.log('(2) DOWNLOAD LOGFILE FOR NEXT SYNC RUN   //')
-    // ************ //
-    logData.mtime = 0
+  } else { 
+
+    console.log('Run `node getCurrentList.js` to generate `list.txt` for file comparison')
+    
+    //  BETTER TO USE RSYNC FOR LARGER TRANSFERS OF DATA ******** //
+    /********************(DOWNLOAD ALL LOGS) **********************/
+    /* (!) NO FILE TO REFERENCE (!)                               */
+    /* (1) SYNC/DOWNLOAD ALL REMOTE LOGS                          */
+    /* (2) DOWNLOAD LOGFILE FOR NEXT SYNC RUN                     */
+    //*********************************************************** */
+    // logData.mtime = 0
     // logData.processed_date = Date.now()
-    logData.downloads = []
-    remotelistJSON.then(currentNetStorageList => {
-    /* (!) UNCOMMENT BELOW LINE TO PROCESS ALL LOGS (!) */
+    // logData.downloads = []
+    // remotelistJSON.then(currentNetStorageList => {
     // let limit = currentNetStorageList.length 
-      let limit = 5 /* TEMPORARY LIMIT TO PREVENT ALL LOGS FROM PROCESSING */
-      for (let i = 0; i < limit; ++i) {
-        logData.downloads.push(currentNetStorageList[i])
-        queue.add(i, utils.downloadLog, [currentNetStorageList[i].name])
-        if (i === limit-1) { /* adds fn's listToFile and logger to end of job queue => */
-          queue.add(limit, utils.listToFile, [netstorage_root, localLogFilePath])
-          queue.add(limit+1, utils.logger, [logData])
-        }
-      }
-      console.log('*************** QUEUED FOR DOWNLOAD: **************//')
-      console.log(logData.downloads)
-      console.log('***************************************************//')
-    }).then(()=> {utils.processQueue(queue)
-    }).catch(errors => {console.log(errors)})
+    // for (let i = 0; i < limit; ++i) {
+    //   logData.downloads.push(currentNetStorageList[i])
+    //   queue.add(i, utils.downloadLog, [currentNetStorageList[i].name])
+    //   if (i === limit-1) { /* adds fn's listToFile and logger to end of job queue => */
+    //     queue.add(limit, utils.listToFile, [netstorage_root, localLogFilePath])
+    //     queue.add(limit+1, utils.logger, [logData])
+    //   }
+    // }
+    //   console.log('*************** QUEUED FOR DOWNLOAD: **************//')
+    //   console.log(logData.downloads)
+    //   console.log('***************************************************//')
+    // }).then(()=> {utils.processQueue(queue)
+    // }).catch(errors => {console.log(errors)})
+    
   }
 
 }
