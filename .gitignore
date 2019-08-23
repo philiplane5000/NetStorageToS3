@@ -1,3 +1,9 @@
+# NetStorage Logs
+*.gz
+
+# Local List
+app/tmp/*
+
 # Environment Vars
 .env
 *.env
