@@ -2,7 +2,7 @@
 
 Summary: A tool used to automate the transfer Akamai NetStorage files or logs to S3.
 
-* SAVE BELOW VALUES IN `app/.env` <br />
+* Save below values in `app/.env` <br />
 NS_HOSTNAME=<value_here>  <br />
 NS_KEYNAME=<value_here>  <br />
 NS_APIKEY=<value_here>  <br />
