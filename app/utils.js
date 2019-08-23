@@ -97,7 +97,6 @@ module.exports = {
   }),
 
   logger: (logData) => {
-    // let logContent = JSON.stringify(obj)
     let logPath = './log.txt'
     let writeToFile = ''
     if (typeof logData == 'string') {
@@ -107,10 +106,7 @@ module.exports = {
     }
     writeToFile += ', '
     fs.appendFile(logPath, writeToFile, 'utf8', (err) => {
-      if (err) { 
-        throw err
-      }
-      console.log(`LogData appended to: ${logPath}`)
+      if (err) console.log(err)
     })
   },
 
@@ -141,8 +137,12 @@ module.exports = {
     fsp.readFile(pathToFile).then(buffer => {
       let params = {Bucket: bucketName, Key: fileName, Body: buffer};
       s3.upload(params, function(err, data) {
+        if (err) {
           console.log(`err: ${err}`)
+        } else {
+          console.log('//****** UPLOAD SUCCESFUL: ******//')
           console.log(`data: ${JSON.stringify(data)}`)
+        }
       });
     }).catch(err => {
         console.log(err)
@@ -158,6 +158,17 @@ module.exports = {
       }
     })
   },
+
+  getFileNamesFromBucketS3: (bucketName) => new Promise(function(resolve, reject) {
+    let params = {
+      Bucket: bucketName, 
+      // MaxKeys: 2
+     };
+     s3.listObjects(params, function(err, data) {
+      if (err) reject(err); // an error occurred
+      else  resolve(data.Contents.map(object => object.Key)); /* resolve on file names */ 
+    });
+  }),
 
   processQueue: (queueObject) => {
     queueObject.run().then(res => {

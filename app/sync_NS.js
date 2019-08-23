@@ -1,10 +1,18 @@
-
-let netStorageSync = () => {
+module.exports = () => {
   
   const utils = require('./utils.js')
   const RunQueue = require('run-queue')
   const netstorage_root = '/408451/'
   const localLogFilePath = process.env.PATH_TO_LOCAL_LOG_FILE
+
+  // ******************************************** //
+  // (1) READ PREVIOUSLY DOWNLOADED LIST                
+  // (2) SET MTIME FROM TOP (LAST ON RECORD)            
+  // (3) READ LATEST LOG FILE AND FILTER DOWN TO RECENT 
+  // (4) SYNC FROM FILTERED LIST                        
+  // (5) DOWNLOAD + REWRITE `/tmp/list.txt`      
+  // (6) WRITE `logData`  TO `log.txt`                  
+  // ********************************************* //
 
   const queue = new RunQueue({
     maxConcurrency: 1
@@ -12,19 +20,8 @@ let netStorageSync = () => {
 
   let fileExists = utils.fileExists(localLogFilePath) /* boolean */
   let remotelistJSON = utils.getCurrentNetStorageList(netstorage_root) /* used by both paths */
-  let logData = {processed_date: Date.now()}
+  let logData = { processed_date: Date.now() }
   
-  // ************ //
-  /*
-    (1) READ PREVIOUSLY DOWNLOADED LIST                
-    (2) SET MTIME FROM TOP (LAST ON RECORD)            
-    (3) READ LATEST LOG FILE AND FILTER DOWN TO RECENT 
-    (4) SYNC FROM FILTERED LIST                        
-    (5) DOWNLOAD + REWRITE `/tmp/list.txt`      
-    (6) WRITE `logData`  TO `log.txt`                  
-  */
-  // ************ //
-
   if (fileExists) { 
     utils.readLocalNetStorageList(localLogFilePath) /* (1) */
       .then(data => data[0].mtime) 
@@ -33,9 +30,10 @@ let netStorageSync = () => {
         remotelistJSON.then(currentListJSON => { 
         // logData.processed_date = Date.now()
           logData.downloads = currentListJSON.filter(fileinfo => fileinfo.mtime > logData.mtime) /* (3) */
-          console.log('*************** QUEUED FOR DOWNLOAD: **************//')
-          console.log(logData.downloads) /* more like 'logsSoonToBeDownloaded' */
-          console.log('***************************************************//')
+          logData.sync_job = 'netstorage'
+          console.log('//*************** QUEUED FOR DOWNLOAD: **************//')
+          console.log(logData.downloads)
+          console.log('//***************************************************//')
           return logData
         }).then(({downloads}) => {
           downloads.forEach((logdetails, index, array) => {
@@ -54,7 +52,7 @@ let netStorageSync = () => {
       })
   } else { 
 
-    console.log('Run `node getCurrentList.js` to generate `list.txt` for file comparison')
+    console.log('RUN `node getCurrentList.js` TO GENERATE LOCAL `app/tmp/list.txt` FOR FILE COMPARISON')
     
     //  BETTER TO USE RSYNC FOR LARGER TRANSFERS OF DATA ******** //
     /********************(DOWNLOAD ALL LOGS) **********************/
@@ -84,5 +82,3 @@ let netStorageSync = () => {
   }
 
 }
-
-module.exports = netStorageSync
