@@ -22,3 +22,7 @@ AWS_SECRET_ACCESS_KEY=<value_here>  <br />
 #### STEP TWO
 * Adjust cron schedule in `app.js`
 * `node app.js`
+
+#### TOOLS USED
+* `aws-sdk` [AWS-SDK-NodeSampleKit](https://github.com/aws-samples/aws-nodejs-sample)
+* `netstorage` [Akamai-NetstorageKit-Node](https://github.com/akamai/NetStorageKit-Node)
