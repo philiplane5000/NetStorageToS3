@@ -17,10 +17,10 @@ AWS_SECRET_ACCESS_KEY=<value_here>  <br />
 
 #### STEP ONE
 * `cd app`
-* `node getCurrentList`
+* `node getCurrentList.js`
 
 #### STEP TWO
-* Adjust cron schedule in `app.js`
+* Adjust cron schedule in `app/app.js`
 * `node app.js`
 
 #### TOOLS USED
