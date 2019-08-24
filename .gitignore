@@ -1,6 +1,9 @@
 # NetStorage Logs
 *.gz
 
+# Local App Log
+log.txt
+
 # Local List
 app/tmp/*
 
