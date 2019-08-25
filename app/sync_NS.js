@@ -1,4 +1,4 @@
-exports.method = () => {
+module.exports = () => {
   
   const utils = require('./utils.js')
   const RunQueue = require('run-queue')
