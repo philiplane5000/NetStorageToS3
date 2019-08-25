@@ -1,7 +1,7 @@
 const sync_NS = require('./sync_NS')
 const sync_S3 = require('./sync_S3')
 const CronJob = require('cron').CronJob
-// https://crontab.guru/#15_*_*_*_*
+// https://crontab.guru/#45_*_*_*_*
 
 new CronJob('45 * * * *', () => {
   sync_NS()

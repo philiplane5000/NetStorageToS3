@@ -6,10 +6,13 @@
 * If directories `app/ns_logs` or `app/tmp` do not exist create them
 * Set `cpCode` to correct value of applicable netstorage root folder in `app/netstorage.js`
 * Save below values in `app/.env` <br />
+* PATH_TO_LOCAL_LOG_FILE = absolute path
+
+`app/.env` <br />
 NS_HOSTNAME=<value_here>  <br />
 NS_KEYNAME=<value_here>  <br />
 NS_APIKEY=<value_here>  <br />
-PATH_TO_LOCAL_LOG_FILE=<value_here>  <br />
+PATH_TO_LOCAL_LOG_FILE=<value_here>/NetStorageToS3/app/tmp/list.txt  <br />
 AWS_ACCESS_KEY=<value_here>  <br />
 AWS_SECRET_ACCESS_KEY=<value_here>  <br />
 

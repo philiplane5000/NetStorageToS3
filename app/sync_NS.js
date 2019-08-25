@@ -1,9 +1,13 @@
-module.exports = () => {
+exports.method = () => {
   
   const utils = require('./utils.js')
   const RunQueue = require('run-queue')
   const netstorage_root = '/408451/'
   const localLogFilePath = process.env.PATH_TO_LOCAL_LOG_FILE
+
+  const queue = new RunQueue({
+    maxConcurrency: 1
+  })
 
   // ******************************************** //
   // (1) READ PREVIOUSLY DOWNLOADED LIST                
@@ -14,21 +18,14 @@ module.exports = () => {
   // (6) WRITE `logData`  TO `log.txt`                  
   // ********************************************* //
 
-  const queue = new RunQueue({
-    maxConcurrency: 1
-  })
-
-  let fileExists = utils.fileExists(localLogFilePath) /* boolean */
-  let remotelistJSON = utils.getCurrentNetStorageList(netstorage_root) /* used by both paths */
-  let logData = { processed_date: Date.now() }
+  let logData = {}
   
-  if (fileExists) { 
+  if ( utils.fileExists(localLogFilePath) ) { 
     utils.readLocalNetStorageList(localLogFilePath) /* (1) */
       .then(data => data[0].mtime) 
       .then(mtime => { {logData.mtime = mtime} }) /* (2) */
       .then(() => {
-        remotelistJSON.then(currentListJSON => { 
-        // logData.processed_date = Date.now()
+        utils.getCurrentNetStorageList(netstorage_root).then(currentListJSON => { 
           logData.downloads = currentListJSON.filter(fileinfo => fileinfo.mtime > logData.mtime) /* (3) */
           logData.sync_job = 'netstorage'
           console.log('//*************** QUEUED FOR DOWNLOAD: **************//')
@@ -50,9 +47,10 @@ module.exports = () => {
       }).catch(errors => {
         console.log(errors)
       })
+      
   } else { 
 
-    console.log('RUN `node getCurrentList.js` TO GENERATE LOCAL `app/tmp/list.txt` FOR FILE COMPARISON')
+    console.log('RUN CMD: `node getCurrentList.js` TO GENERATE LOCAL `app/tmp/list.txt` FOR FILE COMPARISON')
     
     //  BETTER TO USE RSYNC FOR LARGER TRANSFERS OF DATA ******** //
     /********************(DOWNLOAD ALL LOGS) **********************/
@@ -61,18 +59,16 @@ module.exports = () => {
     /* (2) DOWNLOAD LOGFILE FOR NEXT SYNC RUN                     */
     //*********************************************************** */
     // logData.mtime = 0
-    // logData.processed_date = Date.now()
     // logData.downloads = []
     // remotelistJSON.then(currentNetStorageList => {
-    // let limit = currentNetStorageList.length 
-    // for (let i = 0; i < limit; ++i) {
-    //   logData.downloads.push(currentNetStorageList[i])
-    //   queue.add(i, utils.downloadLog, [currentNetStorageList[i].name])
-    //   if (i === limit-1) { /* adds fn's listToFile and logger to end of job queue => */
-    //     queue.add(limit, utils.listToFile, [netstorage_root, localLogFilePath])
-    //     queue.add(limit+1, utils.logger, [logData])
+    //   for (let i = 0, limit = currentNetStorageList.length; i < limit; ++i) {
+    //     logData.downloads.push(currentNetStorageList[i])
+    //     queue.add(i, utils.downloadLog, [currentNetStorageList[i].name])
+    //     if (i === limit-1) { /* adds fn's listToFile and logger to end of job queue => */
+    //       queue.add(limit, utils.listToFile, [netstorage_root, localLogFilePath])
+    //       queue.add(limit+1, utils.logger, [logData])
+    //     }
     //   }
-    // }
     //   console.log('*************** QUEUED FOR DOWNLOAD: **************//')
     //   console.log(logData.downloads)
     //   console.log('***************************************************//')

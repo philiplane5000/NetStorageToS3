@@ -1,3 +1,4 @@
+/* eslint-disable curly */
 const ns = require('./netstorage.js')
 const s3 = require('./s3')
 const fs = require('fs')
@@ -12,7 +13,7 @@ module.exports = {
       } 
       return false
     } catch (err) {
-      // return false
+      console.log(err)
     }
   },
 
@@ -97,6 +98,7 @@ module.exports = {
   }),
 
   logger: (logData) => {
+    logData.processed_date = Date.now()
     let logPath = './log.txt'
     let writeToFile = ''
     if (typeof logData == 'string') {
@@ -118,7 +120,7 @@ module.exports = {
       }
       contentAsJSON = JSON.parse(data)
       mtime = contentAsJSON[0].mtime
-      console.log(mtime) /* need to figure out how to return this */
+      return mtime
     })
   },
 
@@ -135,7 +137,7 @@ module.exports = {
   uploadFileToS3: (pathToFile, bucketName) => {
     let fileName = pathToFile.split('/')[2] /* (!) ONLY WORKS IF LOGS ARE IN `./ns_logs/gia...` (!) */
     fsp.readFile(pathToFile).then(buffer => {
-      let params = {Bucket: bucketName, Key: fileName, Body: buffer};
+      let params = {Bucket: bucketName, Key: fileName, Body: buffer}
       s3.upload(params, function(err, data) {
         if (err) {
           console.log(`err: ${err}`)
@@ -143,9 +145,9 @@ module.exports = {
           console.log('//****** UPLOAD SUCCESFUL: ******//')
           console.log(`data: ${JSON.stringify(data)}`)
         }
-      });
+      })
     }).catch(err => {
-        console.log(err)
+      console.log(err)
     })
   },
 
@@ -163,11 +165,11 @@ module.exports = {
     let params = {
       Bucket: bucketName, 
       // MaxKeys: 2
-     };
-     s3.listObjects(params, function(err, data) {
-      if (err) reject(err); // an error occurred
-      else  resolve(data.Contents.map(object => object.Key)); /* resolve on file names */ 
-    });
+    }
+    s3.listObjects(params, function(err, data) {
+      if (err) reject(err) // an error occurred
+      else  resolve(data.Contents.map(object => object.Key)) /* resolve on file names */ 
+    })
   }),
 
   processQueue: (queueObject) => {
