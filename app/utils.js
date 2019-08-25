@@ -53,8 +53,6 @@ module.exports = {
         fs.writeFile(localPath, JSON.stringify(filesSorted), (err) => {     
           if (err) {
             console.log(err)
-          } else {
-            console.log(`UPDATED => ${localPath}`)
           }
         })
       }
