@@ -3,7 +3,7 @@ module.exports = () => {
   const utils = require('./utils.js')
   const RunQueue = require('run-queue')
   const netstorage_root = '/408451/'
-  const localLogFilePath = process.env.PATH_TO_LOCAL_LOG_FILE
+  const localList = process.env.PATH_TO_LOCAL_LOG_FILE
 
   const queue = new RunQueue({
     maxConcurrency: 1
@@ -20,8 +20,8 @@ module.exports = () => {
 
   let logData = {}
   
-  if ( utils.fileExists(localLogFilePath) ) { 
-    utils.readLocalNetStorageList(localLogFilePath) /* (1) */
+  if ( utils.fileExists(localList) ) { 
+    utils.readLocalNetStorageList(localList) /* (1) */
       .then(data => data[0].mtime) 
       .then(mtime => { {logData.mtime = mtime} }) /* (2) */
       .then(() => {
@@ -36,7 +36,7 @@ module.exports = () => {
           downloads.forEach((logdetails, index, array) => {
             queue.add(index, utils.downloadLog, [logdetails.name]) /* (4) */
             if (index === array.length-1) { /* adds the listToFile and logger to end of queue => */
-              queue.add(array.length, utils.listToFile, [netstorage_root, localLogFilePath]) /* (5) */ 
+              queue.add(array.length, utils.listToFile, [netstorage_root, localList]) /* (5) */ 
               queue.add(array.length+1, utils.logger, [logData]) /* (6) */
             }
           })
@@ -65,7 +65,7 @@ module.exports = () => {
     //     logData.downloads.push(currentNetStorageList[i])
     //     queue.add(i, utils.downloadLog, [currentNetStorageList[i].name])
     //     if (i === limit-1) { /* adds fn's listToFile and logger to end of job queue => */
-    //       queue.add(limit, utils.listToFile, [netstorage_root, localLogFilePath])
+    //       queue.add(limit, utils.listToFile, [netstorage_root, localList])
     //       queue.add(limit+1, utils.logger, [logData])
     //     }
     //   }
