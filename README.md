@@ -20,7 +20,7 @@ AWS_SECRET_ACCESS_KEY=<value_here>  <br />
 
 #### STEP ONE
 * `cd /app`
-* `node getCurrentList.js`
+* `node getRemoteList_NS.js`
 
 #### STEP TWO
 * Adjust cron schedule in `app/app.js`
