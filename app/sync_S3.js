@@ -3,7 +3,7 @@ module.exports = () => {
   const utils = require('./utils')
   const RunQueue = require('run-queue')
   const fsp = require('promise-fs')
-  const bucket = 'ns-logs-bucket'
+  const bucket = 'akamai-netstorage-logs'
 
   const queue = new RunQueue({
     maxConcurrency: 1
