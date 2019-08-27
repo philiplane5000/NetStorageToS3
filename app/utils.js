@@ -170,6 +170,19 @@ module.exports = {
     })
   }),
 
+  /* pass `yyyy` and `mm` as String only */
+  getFromBucketS3: (bucketName, type, server, yyyy, mm ) => new Promise(function(resolve, reject) {
+    let prefix = (mm) ? `gia_${type}_${server}.esw3c_S.${yyyy}${mm}` : `gia_${type}_${server}.esw3c_S.${yyyy}`
+    let params = {
+      Bucket: bucketName, 
+      Prefix: prefix
+    }
+    s3.listObjects(params, function(err, data) {
+      if (err) reject(err) // an error occurred
+      else  resolve(data.Contents.map(object => object.Key)) /* resolve on file names */ 
+    })
+  }),
+
   processQueue: (queueObject) => {
     queueObject.run().then(res => {
       console.log(res)

@@ -14,7 +14,7 @@ new CronJob('30 2,6,10,14,18,22 * * *', () => {
   sync_S3()
 }, null, true, 'America/Los_Angeles')
 
-/* “At 00:00 on day-of-month 15.” */
-new CronJob('0 0 15 * *', () => {
+/* “At 00:00 on day-of-month 1.” */
+new CronJob('0 0 1 * *', () => {
   delLocalLogs()
 }, null, true, 'America/Los_Angeles')

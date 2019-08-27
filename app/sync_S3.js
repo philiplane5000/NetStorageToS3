@@ -1,6 +1,7 @@
 module.exports = () => {
   
   const utils = require('./utils')
+  const getRemoteListS3 = require('./getRemoteList_S3')
   const RunQueue = require('run-queue')
   const fsp = require('promise-fs')
   const bucket = 'akamai-netstorage-logs'
@@ -10,7 +11,7 @@ module.exports = () => {
   })
 
   // ******************************************** //
-  // (1) READ S3 FILE CONTENTS TO ARRAY/LIST
+  // (1) READ CURRENT MONTH S3 FILE CONTENTS TO ARRAY/LIST
   // (2) READ LOCAL FILE CONTENTS TO ARRAY/LIST
   // (3) S3-LIST AS REFERENCE, FILTER LOCAL LIST 
   // (4) SUBMIT REDUCED LOCAL LIST TO QUEUE
@@ -21,7 +22,8 @@ module.exports = () => {
   let logData = {}
   let s3FilesList = []
 
-  utils.getFileNamesFromBucketS3(bucket) /* (1) */
+  /* PROBLEMATIC WHEN MONTH CHANGES AS `NS_LOGS` WILL HAVE A LOT FROM PREVIOUS MONTH (?) */
+  getRemoteListS3('2019', '08') /* (1) */
     .then(remoteFilesArr => {s3FilesList = remoteFilesArr})
     .then(() => {                   /* (2) */             /* (3) */                
       fsp.readdir('./ns_logs').then(files => files.filter(filename => (s3FilesList.indexOf(filename) === -1)))
