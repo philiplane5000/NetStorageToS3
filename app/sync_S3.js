@@ -22,7 +22,6 @@ module.exports = () => {
           logData.sync_job = 's3'
           console.log('//*************** QUEUED FOR UPLOAD: ****************//')
           console.log(logData.uploads)
-          // logData.uploads.forEach(file => { console.log(file) })
           console.log('//***************************************************//')
           logData.uploads.forEach((filename, index, array) => {
             let pathToFile = `./ns_logs/${filename}` /* fn utils.uploadFileToS3() splits file according to this format */
