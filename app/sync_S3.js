@@ -37,7 +37,6 @@ module.exports = () => {
       console.log(errors)
     })
 }
-
 // ****************** SYNC S3 ****************** //
 // ********************************************* //
 // (*) SET CURRENT MONTH AND YEAR W/ MOMENT.JS (*)
