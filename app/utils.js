@@ -3,8 +3,9 @@ const ns = require('./netstorage.js')
 const s3 = require('./s3')
 const fs = require('fs')
 const fsp = require('promise-fs')
+const moment = require('moment')
 
-module.exports = {
+module.exports = { 
 
   fileExists: (pathToLocalFile) => {
     try {
@@ -27,17 +28,6 @@ module.exports = {
         console.log(body.message)
       } 
     }) 
-  },
-
-  list: (netstorage_path) => {
-    ns.list(netstorage_path, (error, response, body) => {
-      if (error) { // errors other than http response codes
-        console.log(`Got error: ${error.message}`)
-      }
-      if (response.statusCode == 200) {
-        console.log(JSON.stringify(body.list.file))
-      } 
-    })
   },
 
   listToFile: (netstorage_path, localPath) => {
@@ -66,9 +56,7 @@ module.exports = {
       }
       if (response.statusCode == 200) {
         let filesArr = body.list.file
-        let filesSorted = filesArr.sort((a,b) => {
-          return b.mtime - a.mtime
-        })
+        let filesSorted = filesArr.sort((a,b) => b.mtime - a.mtime)
         fs.writeFile(fileDestination, JSON.stringify(filesSorted), (err) => {     
           if (err) {
             reject(err)
@@ -96,7 +84,7 @@ module.exports = {
   }),
 
   logger: (logData) => {
-    logData.processed_date = Date.now()
+    logData.processed_date = moment().format('HH:mm:ss MM/DD/YYYY')
     let logPath = './log.txt'
     let writeToFile = ''
     if (typeof logData == 'string') {
@@ -149,23 +137,13 @@ module.exports = {
     })
   },
 
-  listBucketsS3: () => {
-    s3.listBuckets(function(err, data) {
-      if (err) {
-        console.log('Error', err)
-      } else {
-        console.log('Success', data.Buckets)
-      }
-    })
-  },
-
   getFileNamesFromBucketS3: (bucketName) => new Promise(function(resolve, reject) {
     let params = {
       Bucket: bucketName, 
-      // MaxKeys: 2
+      MaxKeys: 1000 /* absolute max by default -- cannot increase */
     }
     s3.listObjects(params, function(err, data) {
-      if (err) reject(err) // an error occurred
+      if (err) reject(err)
       else  resolve(data.Contents.map(object => object.Key)) /* resolve on file names */ 
     })
   }),
@@ -178,7 +156,7 @@ module.exports = {
       Prefix: prefix
     }
     s3.listObjects(params, function(err, data) {
-      if (err) reject(err) // an error occurred
+      if (err) reject(err)
       else  resolve(data.Contents.map(object => object.Key)) /* resolve on file names */ 
     })
   }),
