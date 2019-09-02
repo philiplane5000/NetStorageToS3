@@ -5,7 +5,7 @@ const fs = require('fs')
 const fsp = require('promise-fs')
 const moment = require('moment')
 
-module.exports = { 
+module.exports = {
 
   fileExists: (pathToLocalFile) => {
     try {
@@ -18,6 +18,23 @@ module.exports = {
     }
   },
 
+  fileExistsS3: (bucketName, filename) => new Promise(function(resolve,reject) { /* returns array */
+    let params = {
+      Bucket: bucketName,
+      Prefix: filename,
+      MaxKeys: 1
+    }
+    s3.listObjects(params, function(err, data) {
+      if (err) { 
+        reject(err)
+      } else if (data.Contents.length > 0) {
+        resolve(true) 
+      } else {
+        resolve(false)
+      }
+    })
+  }),
+
   downloadLog: (nsSrc) => {
     ns.download(nsSrc, './ns_logs/', (error, response, body) => {
       if (error) { // errors other than http response codes
@@ -28,6 +45,17 @@ module.exports = {
         console.log(body.message)
       } 
     }) 
+  },
+
+  list: (netstorage_path) => {
+    ns.list(netstorage_path, (error, response, body) => {
+      if (error) { // errors other than http response codes
+        console.log(`Got error: ${error.message}`)
+      }
+      if (response.statusCode == 200) {
+        console.log(JSON.stringify(body.list.file))
+      } 
+    })
   },
 
   listToFile: (netstorage_path, localPath) => {
@@ -56,7 +84,9 @@ module.exports = {
       }
       if (response.statusCode == 200) {
         let filesArr = body.list.file
-        let filesSorted = filesArr.sort((a,b) => b.mtime - a.mtime)
+        let filesSorted = filesArr.sort((a,b) => {
+          return b.mtime - a.mtime
+        })
         fs.writeFile(fileDestination, JSON.stringify(filesSorted), (err) => {     
           if (err) {
             reject(err)
@@ -84,7 +114,7 @@ module.exports = {
   }),
 
   logger: (logData) => {
-    logData.processed_date = moment().format('HH:mm:ss MM/DD/YYYY')
+    logData.processed_date = moment().format('MM-DD-YYYY, HH:MM:ss')
     let logPath = './log.txt'
     let writeToFile = ''
     if (typeof logData == 'string') {
@@ -137,26 +167,23 @@ module.exports = {
     })
   },
 
+  listBucketsS3: () => {
+    s3.listBuckets(function(err, data) {
+      if (err) {
+        console.log('Error', err)
+      } else {
+        console.log('Success', data.Buckets)
+      }
+    })
+  },
+
   getFileNamesFromBucketS3: (bucketName) => new Promise(function(resolve, reject) {
     let params = {
       Bucket: bucketName, 
-      MaxKeys: 1000 /* absolute max by default -- cannot increase */
+      // MaxKeys: 2
     }
     s3.listObjects(params, function(err, data) {
-      if (err) reject(err)
-      else  resolve(data.Contents.map(object => object.Key)) /* resolve on file names */ 
-    })
-  }),
-
-  /* pass `yyyy` and `mm` as String only */
-  getFromBucketS3: (bucketName, type, server, yyyy, mm ) => new Promise(function(resolve, reject) {
-    let prefix = (mm) ? `gia_${type}_${server}.esw3c_S.${yyyy}${mm}` : `gia_${type}_${server}.esw3c_S.${yyyy}`
-    let params = {
-      Bucket: bucketName, 
-      Prefix: prefix
-    }
-    s3.listObjects(params, function(err, data) {
-      if (err) reject(err)
+      if (err) reject(err) // an error occurred
       else  resolve(data.Contents.map(object => object.Key)) /* resolve on file names */ 
     })
   }),
