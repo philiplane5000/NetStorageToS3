@@ -29,3 +29,8 @@ AWS_SECRET_ACCESS_KEY=<value_here>  <br />
 #### TOOLS USED
 * [AWS-SDK-NodeSampleKit](https://github.com/aws-samples/aws-nodejs-sample)
 * [Akamai-NetstorageKit-Node](https://github.com/akamai/NetStorageKit-Node)
+
+#### IMPROVEMENTS
+* https://stackoverflow.com/questions/26726862/how-to-determine-if-object-exists-aws-s3-node-js-sdk -- check if bucket exists vs. comparison with list
+
+
