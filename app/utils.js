@@ -7,7 +7,7 @@ const moment = require('moment')
 
 module.exports = {
 
-  fileExists: (pathToLocalFile) => {
+  logFileExists: (pathToLocalFile) => {
     try {
       if (fs.existsSync(pathToLocalFile)) {
         return true
@@ -166,6 +166,19 @@ module.exports = {
       console.log(err)
     })
   },
+
+  objectExistsPromiseS3: (objectName, bucketName) => new Promise(function(resolve, reject) {
+    let params = {
+      Bucket: bucketName,
+      Key: objectName,
+    }
+    s3.waitFor('objectExists', params, function(err, data) {
+      if (err) resolve(objectName)
+      else if (data) resolve('exists')
+      else reject({message: 'something went wrong'})
+      
+    })
+  }),
 
   listBucketsS3: () => {
     s3.listBuckets(function(err, data) {

@@ -12,7 +12,7 @@ module.exports = () => {
 
   let logData = {}
   
-  if ( utils.fileExists(localList) ) { 
+  if ( utils.logFileExists(localList) ) { 
     
     utils.readLocalNetStorageList(localList) /* (1) */
       .then(data => data[0].mtime) 
